@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
+<style>
+  body { font-family: Arial; padding: 20px; }
+  input, button { margin: 5px; }
+  .product { border: 1px solid #ccc; padding: 10px; margin: 5px; }
+</style>
+</head>
+<body>
+<h1>Admin Dashboard</h1>
+
+<h2>Add Product</h2>
+<input type="text" id="name" placeholder="Name">
+<input type="number" id="price" placeholder="Price">
+<input type="text" id="stock" placeholder="Stock">
+<button onclick="addProduct()">Add</button>
+
+<h2>Products</h2>
+<div id="productList"></div>
+
+<script>
+const API_URL = 'https://68e416768e116898997af68f.mockapi.io/v1/products';
+
+function loadProducts() {
+  fetch(API_URL)
+    .then(res => res.json())
+    .then(products => {
+      const container = document.getElementById('productList');
+      container.innerHTML = '';
+      products.forEach(p => {
+        container.innerHTML += `
+          <div class="product" id="product-${p.id}">
+            <input value="${p.name}" id="name-${p.id}">
+            <input type="number" value="${p.price}" id="price-${p.id}">
+            <input value="${p.stock}" id="stock-${p.id}">
+            <button onclick="updateProduct('${p.id}')">Update</button>
+            <button onclick="deleteProduct('${p.id}')">Delete</button>
+          </div>
+        `;
+      });
+    });
+}
+
+// Add product
+function addProduct() {
+  const name = document.getElementById('name').value;
+  const price = document.getElementById('price').value;
+  const stock = document.getElementById('stock').value;
+
+  fetch(API_URL, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({name, price, stock})
+  }).then(()=> loadProducts());
+}
+
+// Update product
+function updateProduct(id) {
+  const name = document.getElementById('name-'+id).value;
+  const price = document.getElementById('price-'+id).value;
+  const stock = document.getElementById('stock-'+id).value;
+
+  fetch(`${API_URL}/${id}`, {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({name, price, stock})
+  }).then(()=> loadProducts());
+}
+
+// Delete product
+function deleteProduct(id) {
+  fetch(`${API_URL}/${id}`, { method: 'DELETE' })
+    .then(()=> loadProducts());
+}
+
+// Auto-refresh every 5 sec
+loadProducts();
+setInterval(loadProducts, 5000);
+</script>
+</body>
+</html>
