@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <title>MockAPI E-commerce Test</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .product { border: 1px solid #ccc; padding: 10px; margin: 10px; display: inline-block; width: 200px; vertical-align: top; text-align: center; }
+    .product img { width: 100%; height: auto; margin-bottom: 10px; }
+  </style>
 </head>
 <body>
   <h1>Products</h1>
@@ -12,22 +17,31 @@
     // MockAPI URL
     const API_URL = 'https://68e416768e116898997af68f.mockapi.io/v1/products';
 
-    // Get data
-    fetch(API_URL)
-      .then(res => res.json())
-      .then(products => {
-        const container = document.getElementById('productList');
-        products.forEach(p => {
-          container.innerHTML += `
-            <div style="border:1px solid #ccc; padding:10px; margin:10px;">
-              <h3>${p.name}</h3>
-              <p>Price: $${p.price}</p>
-              <p>Stock: ${p.stock}</p>
-            </div>
-          `;
-        });
-      })
-      .catch(err => console.error(err));
+    function loadProducts() {
+      fetch(API_URL)
+        .then(res => res.json())
+        .then(products => {
+          const container = document.getElementById('productList');
+          container.innerHTML = ''; // clear previous content
+          products.forEach(p => {
+            container.innerHTML += `
+              <div class="product">
+                <img src="${p.avatar || 'https://via.placeholder.com/150'}" alt="${p.name}">
+                <h3>${p.name}</h3>
+                <p>Price: $${p.price}</p>
+                <p>Stock: ${p.stock}</p>
+              </div>
+            `;
+          });
+        })
+        .catch(err => console.error(err));
+    }
+
+    // initial load
+    loadProducts();
+
+    // auto-refresh every 5 seconds for live effect
+    setInterval(loadProducts, 5000);
   </script>
 </body>
 </html>
