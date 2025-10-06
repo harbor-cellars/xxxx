@@ -7,6 +7,7 @@
   body { font-family: Arial; padding: 20px; }
   input, button { margin: 5px; }
   .product { border: 1px solid #ccc; padding: 10px; margin: 5px; }
+  img { width: 100px; display: block; margin-bottom: 5px; }
 </style>
 </head>
 <body>
@@ -16,6 +17,7 @@
 <input type="text" id="name" placeholder="Name">
 <input type="number" id="price" placeholder="Price">
 <input type="text" id="stock" placeholder="Stock">
+<input type="text" id="avatar" placeholder="Image URL">
 <button onclick="addProduct()">Add</button>
 
 <h2>Products</h2>
@@ -33,9 +35,11 @@ function loadProducts() {
       products.forEach(p => {
         container.innerHTML += `
           <div class="product" id="product-${p.id}">
+            <img src="${p.avatar || 'https://via.placeholder.com/100'}" alt="${p.name}">
             <input value="${p.name}" id="name-${p.id}">
             <input type="number" value="${p.price}" id="price-${p.id}">
             <input value="${p.stock}" id="stock-${p.id}">
+            <input value="${p.avatar || ''}" id="avatar-${p.id}" placeholder="Image URL">
             <button onclick="updateProduct('${p.id}')">Update</button>
             <button onclick="deleteProduct('${p.id}')">Delete</button>
           </div>
@@ -49,11 +53,12 @@ function addProduct() {
   const name = document.getElementById('name').value;
   const price = document.getElementById('price').value;
   const stock = document.getElementById('stock').value;
+  const avatar = document.getElementById('avatar').value;
 
   fetch(API_URL, {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({name, price, stock})
+    body: JSON.stringify({name, price, stock, avatar})
   }).then(()=> loadProducts());
 }
 
@@ -62,11 +67,12 @@ function updateProduct(id) {
   const name = document.getElementById('name-'+id).value;
   const price = document.getElementById('price-'+id).value;
   const stock = document.getElementById('stock-'+id).value;
+  const avatar = document.getElementById('avatar-'+id).value;
 
   fetch(`${API_URL}/${id}`, {
     method: 'PUT',
     headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({name, price, stock})
+    body: JSON.stringify({name, price, stock, avatar})
   }).then(()=> loadProducts());
 }
 
